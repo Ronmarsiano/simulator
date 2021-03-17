@@ -1,0 +1,8 @@
+# the format of the file is [seconds to execute]|[message_to_write] | destination
+this is an invalid
+invalid_seconds| message to print
+4| message to print with no destination
+4.5| valid message | 127.0.0.1:514
+1 | just message one second later | invalidIp:504
+1 | just message one second later | 127.0.0.1:NO port
+1 | just message one second later | 12.12.12.14:514
