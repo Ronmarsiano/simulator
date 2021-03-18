@@ -66,8 +66,8 @@ def get_seconds(line):
 def get_message_token(line):
     tokens = line.split("|")
     if len(tokens) >= 3:
-        # we can assume that the first token is the number and to have a second token since get_seconds validated it
-        message = '|'.join(tokens[1:len(tokens)]).split("|")[0]
+        # we can assume that the first token is the number and and the last should be the destination
+        message = '|'.join(tokens[1:len(tokens)-1])
         return message
     else:
         print_error_message("Incorrect line format : Line:{line}".format(line=line))
@@ -99,7 +99,7 @@ def get_port(line):
     ip_port_arr = ip_port_str.split(":")
     if len(ip_port_arr) == 2:
         if validate_port(ip_port_arr[1]):
-            port_str = ip_port_arr[1]
+            port_str = str(int(ip_port_arr[1]))
             return port_str
     else:
         print_error_message("Destination should be in the following format ip:port. Got: {ip_port_str}"
@@ -133,7 +133,7 @@ def process_line(line):
                 if message and ip and port:
                     time.sleep(seconds)
                     send_message(ip, port, message)
-                    print("Message was sent")
+                    print("Message was sent - {message}".format(message=message))
 
 
 def read_line(path):
