@@ -25,7 +25,6 @@ def get_prefix(message):
 
 
 def get_message(message):
-    result = ""
     if is_cisco_asa_message(message) or is_cef_message(message):
         tokens = message.split(':')
         return ':'.join(tokens[1:len(tokens)])
