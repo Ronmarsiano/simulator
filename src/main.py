@@ -2,7 +2,6 @@
 import subprocess
 import time
 import ipaddress
-import re
 
 
 
@@ -29,11 +28,9 @@ def get_message(message):
     result = ""
     if is_cisco_asa_message(message) or is_cef_message(message):
         tokens = message.split(':')
-        result = ':'.join(tokens[1:len(tokens)])
+        return ':'.join(tokens[1:len(tokens)])
     else:
-        result = message
-    #result = "\"" + result + "\""
-    return result
+        return message
 
 
 def send_message(ip, port, message_to_send):
