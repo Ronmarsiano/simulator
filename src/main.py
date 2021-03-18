@@ -32,7 +32,7 @@ def get_message(message):
         result = ':'.join(tokens[1:len(tokens)])
     else:
         result = message
-    result = "\"" + result + "\""
+    #result = "\"" + result + "\""
     return result
 
 
