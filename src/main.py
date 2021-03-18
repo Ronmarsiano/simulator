@@ -20,7 +20,7 @@ def is_cisco_asa_message(message):
 
 def get_prefix(message):
     if is_cisco_asa_message(message) or is_cef_message(message):
-        return message.split(':')[0]
+        return message.split(':')[0] + ":"
     else:
         return ""
 
