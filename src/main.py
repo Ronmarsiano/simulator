@@ -1,14 +1,9 @@
 #! /usr/local/bin/python3
-import sys
 import subprocess
-import random
 import time
 import ipaddress
 import re
 
-
-# this regex was taken from the security events file in the oms agent that is used to match messages to CEF or cisco ASA
-SECURITY_EVENT_REGEX="/(?<time>(?:\w+ +){2,3}(?:\d+:){2}\d+|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.[\w\-\:\+]{3,12}):?\s*(?:(?<host>[^: ]+) ?:?)?\s*(?<ident>.*CEF.+?(?=0\|)|%ASA[0-9\-]{8,10})\s*:?(?<message>0\|.*|.*)/"
 
 
 def print_error_message(reason):
@@ -16,15 +11,15 @@ def print_error_message(reason):
 
 
 def is_cef_message(message):
-    return message.startswith("CEF:") and re.match(SECURITY_EVENT_REGEX,message)
+    return "CEF:" in message
 
 
 def is_cisco_asa_message(message):
-    return message.startswith("%ASA-") and re.match(SECURITY_EVENT_REGEX,message)
+    return "%ASA-" in message
 
 
 def get_prefix(message):
-    if is_cisco_asa_message(message) or is_cisco_asa_message(message):
+    if is_cisco_asa_message(message) or is_cef_message(message):
         return message.split(':')[0]
     else:
         return ""
@@ -32,7 +27,8 @@ def get_prefix(message):
 
 def get_message(message):
     if is_cisco_asa_message(message) or is_cef_message(message):
-        return ':'.join(message.split(':')[1,len(message.split(':'))])
+        tokens = message.split(':')
+        return ':'.join(tokens[1:len(tokens)])
     else:
         return message
 
@@ -41,6 +37,9 @@ def send_message(ip, port, message_to_send):
     command_tokens = ["logger", "-p",  "local4.warn", "-t", get_prefix(message_to_send),
                       get_message(message_to_send), "-P", str(port),
                       "-T", "-n", str(ip)] if get_prefix(message_to_send) != "" else ["logger", "-p",  "local4.warn", get_message(message_to_send), "-P", str(port), "-T", "-n", str(ip)]
+    print("Commands\n")
+    print(command_tokens)
+    print("\n\n")
     logger = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     o, e = logger.communicate()
     if e is None:
