@@ -26,16 +26,19 @@ def get_prefix(message):
 
 
 def get_message(message):
+    result= ""
     if is_cisco_asa_message(message) or is_cef_message(message):
         tokens = message.split(':')
-        return ':'.join(tokens[1:len(tokens)])
+        result = ':'.join(tokens[1:len(tokens)])
     else:
-        return message
+        result = message
+    result = "\"" + result + "\""
+    return result
 
 
 def send_message(ip, port, message_to_send):
     command_tokens = ["logger", "-p",  "local4.warn", "-t", get_prefix(message_to_send),
-                      "\""+get_message(message_to_send)+ "\"", "-P", str(port),
+                      get_message(message_to_send), "-P", str(port),
                       "-T", "-n", str(ip)] if get_prefix(message_to_send) != "" else ["logger", "-p",  "local4.warn", get_message(message_to_send), "-P", str(port), "-T", "-n", str(ip)]
     print("Commands\n")
     print(command_tokens)
