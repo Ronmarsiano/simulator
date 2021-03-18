@@ -31,14 +31,16 @@ def get_prefix(message):
 
 
 def get_message(message):
-        if is_cisco_asa_message(message) or is_cef_message(message):
-            return ':'.join(message.split(':')[1,len(message.split(':'))])
-        else:
-            return message
+    if is_cisco_asa_message(message) or is_cef_message(message):
+        return ':'.join(message.split(':')[1,len(message.split(':'))])
+    else:
+        return message
 
 
 def send_message(ip, port, message_to_send):
-    command_tokens = ["logger", "-p",  "local4.warn", "-t", get_prefix(message_to_send), get_message(message_to_send), "-P", str(port), "-T", "-n", str(ip)]
+    command_tokens = ["logger", "-p",  "local4.warn", "-t", get_prefix(message_to_send),
+                      get_message(message_to_send), "-P", str(port),
+                      "-T", "-n", str(ip)] if get_prefix(message_to_send) != "" else ["logger", "-p",  "local4.warn", get_message(message_to_send), "-P", str(port), "-T", "-n", str(ip)]
     logger = subprocess.Popen(command_tokens, stdout=subprocess.PIPE)
     o, e = logger.communicate()
     if e is None:
@@ -76,7 +78,7 @@ def validate_ip(ip_addr_str):
     try:
         ipaddress.ip_address(ip_addr_str.strip())
         return True
-    except:
+    except(ValueError, TypeError) as e:
         print_error_message("Provided destination ip is not valid. got: {ip}".format(ip=ip_addr_str))
         return False
 
