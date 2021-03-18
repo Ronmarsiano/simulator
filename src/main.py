@@ -117,7 +117,7 @@ def get_ip(line):
     if len(ip_port_arr) == 2:
         if validate_ip(ip_port_arr[0]):
             ip_str = ip_port_arr[0]
-            return ip_str
+            return ip_str.strip()
     else:
         print_error_message("Destination should be in the following format ip:port. Got: {ip_port_str}"
                             .format(ip_port_str=ip_port_str))
